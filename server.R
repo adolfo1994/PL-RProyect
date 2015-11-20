@@ -14,8 +14,32 @@ shinyServer(function(input, output) {
     if (is.null(inFile))
       return(NULL)
     list(src = inFile$datapath,
-         contentType = 'image/png',
          width = 600,
          alt = "This is alternate text")
   })
+  output$name <- renderText({
+    inFile <- input$file
+    if (is.null(inFile))
+      return(NULL)
+    c("Image: " , inFile$name)
+  })
+  output$datapath <- renderText({
+    inFile <- input$file
+    if (is.null(inFile))
+      return(NULL)
+    c("Path: " , inFile$datapath)
+  })
+  output$size <- renderText({
+    inFile <- input$file
+    if (is.null(inFile))
+      return(NULL)
+    c("Size: " , inFile$size)
+  })
+  output$type <- renderText({
+    inFile <- input$file
+    if (is.null(inFile))
+      return(NULL)
+    c("Type: " , inFile$type)
+  })
+
 })

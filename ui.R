@@ -10,11 +10,16 @@ library(shiny)
 shinyUI(fluidPage(
 
   # Application title
-  titlePanel("Machine Learning Demo with R"),
+  titlePanel("Clustering de Color en imagenes"),
 
   # FileInput
   sidebarLayout(
     sidebarPanel(
+      sliderInput(
+      "bins", 
+      "Number of clusters: ",
+      min = 2, max = 7, value = 4),
+      
       fileInput(
         "file",
         "files",
@@ -26,7 +31,11 @@ shinyUI(fluidPage(
 
     # Show a plot of the generated distribution
     mainPanel(
-      imageOutput("image")
+      imageOutput("image"),
+      textOutput("name"),
+      textOutput("datapath"),
+      textOutput("size"),
+      textOutput("type")
     )
   )
 ))
