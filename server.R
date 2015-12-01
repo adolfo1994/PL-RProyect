@@ -2,6 +2,7 @@ library(shiny)
 library(jpeg)
 library(ggplot2)
 
+# Tema de ploteo para ggplot, define estilos para la tabla
 plotTheme <- function() {
   theme(
     panel.background = element_rect(
@@ -28,31 +29,34 @@ plotTheme <- function() {
       vjust = 1.5)
   )
 }  
+
+# Función principal del servidor
 shinyServer(function(input, output) {
   
+  # Primer output, la imagen original
   output$image <- renderImage({
     
-    inFile <- input$file
+    inFile <- input$image1
     
-    if (is.null(inFile))
+    if (is.null(inFile))   # validar que se haya subido la imagen
       return(NULL)
     
     list(src = inFile$datapath,
          height = 300,
-         alt = "This is alternate text")
+         alt = "Imagen original") # Mostrar
   })
   
   output$plot <- renderPlot({
-    inFile <- input$file
+    inFile <- input$image2
     
-    if (is.null(inFile))
-      return(NULL)
-    img = readJPEG(inFile$datapath)
+    if (is.null(inFile))         # Validar que se haya subido la imagen
+      return(NULL)        
+    img = readJPEG(inFile$datapath) # Leer imagen JPEG
     closeAllConnections();
-    # Obtain the dimension
+    # Obtener dimensión de la imagen
     imgDm <- dim(img)
-    
-    # Assign RGB channels to data frame
+
+    # Assiganr RGB al frame de datos
     imgRGB <- data.frame(
       x = rep(1:imgDm[2], each = imgDm[1]),
       y = rep(imgDm[1]:1, imgDm[2]),
@@ -60,41 +64,16 @@ shinyServer(function(input, output) {
       G = as.vector(img[,,2]),
       B = as.vector(img[,,3])
     )
-    kClusters <- input$bins
-    kMeans <- kmeans(imgRGB[, c("R", "G", "B")], centers = kClusters)
-    kColours <- rgb(kMeans$centers[kMeans$cluster,])
+    
+    kClusters <- input$bins # Numero de clusters, obtenidos del slider 
+    kMeans <- kmeans(imgRGB[, c("R", "G", "B")], centers = kClusters)  # kmeans, que ya esta implementado
+    kColours <- rgb(kMeans$centers[kMeans$cluster,]) # generar la imagen clusterizada
     p <- ggplot(data = imgRGB, aes(x = x, y = y)) + 
       geom_point(colour = kColours) +
       labs(title = paste("k-Means Clustering of", kClusters, "Colours")) +
       xlab("x") +
       ylab("y") + 
-      plotTheme()
+      plotTheme()                            # Mostrar la imagen en output
     print(p)
   })
-#   
-#   output$name <- renderText({
-#     inFile <- input$file
-#     if (is.null(inFile))
-#       return(NULL)
-#     c("Image: " , inFile$name)
-#   })
-#   output$datapath <- renderText({
-#     inFile <- input$file
-#     if (is.null(inFile))
-#       return(NULL)
-#     c("Path: " , inFile$datapath)
-#   })
-#   output$size <- renderText({
-#     inFile <- input$file
-#     if (is.null(inFile))
-#       return(NULL)
-#     c("Size: " , inFile$size)
-#   })
-#   output$type <- renderText({
-#     inFile <- input$file
-#     if (is.null(inFile))
-#       return(NULL)
-#     c("Type: " , inFile$type)
-#   })
-
 })

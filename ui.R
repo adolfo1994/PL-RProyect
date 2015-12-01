@@ -1,35 +1,37 @@
-
-# This is the user-interface definition of a Shiny web application.
-# You can find out more about building applications with Shiny here:
-#
-# http://shiny.rstudio.com
-#
-
 library(shiny)
 
 shinyUI(fluidPage(
 
-  # Application title
+  # Titulo
   titlePanel("Clustering de Color en imagenes"),
 
-  # FileInput
+  # Layout
   sidebarLayout(
     sidebarPanel(
+      # Slider para seleccion el numero clusters
       sliderInput(
       "bins", 
       "Number of clusters: ",
-      min = 2, max = 7, value = 4),
+      min = 2, max = 9, value = 4),
       
+      # Imagen original
       fileInput(
-        "file",
-        "files",
+        "image1",
+        "Original Image",
+        multiple = FALSE,
+        accept = NULL,
+        width = NULL),
+      
+      # Imagen a clusterizar
+      fileInput(
+        "image2",
+        "Clustered Image",
         multiple = FALSE,
         accept = NULL,
         width = NULL)
-      
     ),
 
-    # Show a plot of the generated distribution
+    # Mostrar Imagen original y plot de los pixeles clusterizados
     mainPanel(
       imageOutput("image"),
       plotOutput('plot')
